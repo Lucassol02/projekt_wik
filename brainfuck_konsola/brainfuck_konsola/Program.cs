@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,33 +67,59 @@ namespace brainfuck_konsola
                 }
                 else if (opcja.Key == ConsoleKey.P)
                 {
-                    int numer = 0;
+                    int[] numer = new int[30000];
 
                     Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
                     string plik = Console.ReadLine();
-                    StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\source\\repos\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
-                    //StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\brainfuck_konsola-main\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
-                    string ciąg = czytaj.ReadToEnd();
-                    Console.WriteLine(ciąg);
-                    char[] bf = ciąg.ToCharArray();
-                    string odpowiedź = string.Empty;
-                    int j = 0;
-                    int[] wskaźnik = new int[30000];
-                    for (int i = 0; i < bf.Length; i++)
+                    try
                     {
-                        if (bf[i] == '.')
-                        {
-                            string wartość = Convert.ToString(numer);
-                            int liczba = Convert.ToInt32(wartość, 16);
-                            string wartośćLiczby = Char.ConvertFromUtf32(liczba);
-                            char znak = (char)liczba;
-                            odpowiedź += znak;
-                        }
-                        else if (bf[i] == '+') numer += 1;
-                        else if (bf[i] == '-') numer -= 1;
+                        StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\source\\repos\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
+                        //StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\brainfuck_konsola-main\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
+                        string ciąg = czytaj.ReadToEnd();
+                        Console.WriteLine(ciąg);
+                        char[] bf = ciąg.ToCharArray();
+                        string odpowiedź = string.Empty;
+                        int i = 0, j = 0;
+                        int[] wskaźnik = new int[30000];
+                        do {
+                            if (bf[i] == '.')
+                            {
+                                string wartość = Convert.ToString(numer[j]);
+                                int liczba = Convert.ToInt32(wartość, 16);
+                                string wartośćLiczby = Char.ConvertFromUtf32(liczba);
+                                char znak = (char)liczba;
+                                odpowiedź += znak;
+                            }
+                            else if (bf[i] == '+')
+                            {
+                                numer[j] += 1;
+                                if (numer[j] > 255) numer[j] = 0;
+                            }
+                            else if (bf[i] == '-')
+                            {
+                                numer[j] -= 1;
+                                if (numer[j] < 0) numer[j] = 255;
+                            }
+                            else if (i == bf.Length) Console.WriteLine(odpowiedź);
+                            else if (bf[i] == '<')
+                            {
+                                if (j == 0) j = wskaźnik.Length - 1;
+                                else j -= 1;
+                            }
+                            else if (bf[i] == '>')
+                            {
+                                if (j == 29999) j = 0;
+                                else j += 1;
+                            }
+                            i++;
+                            if (i == bf.Length) Console.WriteLine(odpowiedź);
+                        } while (i < bf.Length);
+                        czytaj.Close();
                     }
-                    Console.WriteLine(odpowiedź);
-                    czytaj.Close();
+                    catch (System.IO.FileNotFoundException)
+                    {
+                        Console.Write($"Nie odnaleziono pliku {plik}.txt. Nastąpi powrót do menu głównego.");
+                    }
                     Console.Write("\n\nProszę wybrać jedną z tych opcji: H (info), P (kompilacja) lub E (wyjście): ");
                     opcja = Console.ReadKey();
                 }
