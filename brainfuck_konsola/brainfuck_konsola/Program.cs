@@ -16,11 +16,11 @@ namespace brainfuck_konsola
             Console.Write("\n|---------------------------------------------------------------------------------------------------------|");
             Console.Write("\n| znak |                 instrukcja                  | znak |                 instrukcja                  |");
             Console.Write("\n|---------------------------------------------------------------------------------------------------------|");
-            Console.Write("\n|   >  |       Zwiększ wartość wskaźnika o 1.        |  <   |       Zmniejsz wartość wskaźnika o 1.       |");
+            Console.Write("\n|   >  |        Zwiększ wartość wskaźnika o 1.       |  <   |       Zmniejsz wartość wskaźnika o 1.       |");
             Console.Write("\n|---------------------------------------------------------------------------------------------------------|");
             Console.Write("\n|   +  |       Zwiększ w bieżącej pozycji o 1.       |  -   |       Zmniejsz w bieżącej pozycji o 1.      |");
             Console.Write("\n|---------------------------------------------------------------------------------------------------------|");
-            Console.Write("\n|   +  |       Zwiększ w bieżącej pozycji o 1.       |  -   |       Zmniejsz w bieżącej pozycji o 1.      |");
+            Console.Write("\n|   .  |         Wypisz znak w danej pozycji.        |  ,   |          Pobierz znak z klawiatury.         |");
             Console.Write("\n|---------------------------------------------------------------------------------------------------------|");
             Console.Write("\n|   [  |  Skocz bezpośrednio do odpowiadającego ele- |  ]   |    Skocz do odpowiadającego elementu '['.   |");
             Console.Write("\n|      | mentu o 1, jeśli w bieżącej pozycji jest 0. |      |                                             |");
@@ -45,10 +45,6 @@ namespace brainfuck_konsola
             Console.Write("\n\nPracę wykonał Łukasz Wojdalski.");
             Console.Write("\n\nProszę wybrać jedną z tych opcji: H (info), P (kompilacja) lub E (wyjście): ");
         }
-        public void Konwerter(int numerAscii)
-        {
-
-        }
         static void Main(string[] args)
         {
             Console.Write("Witamy w interpreterze języka Brainfuck. Aby rozpocząć pracę, należy wybrać polecenie. (h - informacje prawno-autorskie; -p <ścieżka do pliku> - uruchom wskazany kod Brainfuck; -e - wyjdź z programu): "); 
@@ -68,6 +64,7 @@ namespace brainfuck_konsola
                 else if (opcja.Key == ConsoleKey.P)
                 {
                     int[] numer = new int[30000];
+                    Encoding utf8 = Encoding.UTF8;
 
                     Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
                     string plik = Console.ReadLine();
@@ -81,14 +78,31 @@ namespace brainfuck_konsola
                         string odpowiedź = string.Empty;
                         int i = 0, j = 0;
                         int[] wskaźnik = new int[30000];
+                        string wejściowa;
+                        char znak;
+                        
                         do {
                             if (bf[i] == '.')
                             {
                                 string wartość = Convert.ToString(numer[j]);
-                                int liczba = Convert.ToInt32(wartość, 16);
-                                string wartośćLiczby = Char.ConvertFromUtf32(liczba);
-                                char znak = (char)liczba;
+                                znak = (char)numer[j];
                                 odpowiedź += znak;
+                            }
+                            else if (bf[i] == ',')
+                            {
+                                do
+                                {
+                                    Console.Write("Podaj dowolny znak z tablicy ASCII ");
+                                    wejściowa = Console.ReadLine();
+                                    if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
+                                    else
+                                    {
+                                        
+                                        Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
+                                        foreach (Byte b in tablicaBitów)
+                                            numer[j] = b;
+                                    }
+                                } while (wejściowa.Length != 1);
                             }
                             else if (bf[i] == '+')
                             {
