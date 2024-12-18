@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -77,10 +79,11 @@ namespace brainfuck_konsola
                         char[] bf = ciąg.ToCharArray();
                         string odpowiedź = string.Empty;
                         int i = 0, j = 0;
+                        int różnica = 0;
                         int[] wskaźnik = new int[30000];
                         string wejściowa;
                         char znak;
-                        int czynnik1 = 0;
+                        int czynnik = 0;
                         for (int szukacz = 0; szukacz < bf.Length; szukacz++)
                         {
                             if (bf[szukacz] == '[')
@@ -89,17 +92,40 @@ namespace brainfuck_konsola
                                 {
                                     if (bf[i] == '+')
                                     {
-                                        if (czynnik1 == 255) czynnik1 = 0;
-                                        else czynnik1 += 1;
+                                        if (czynnik == 255) czynnik = 0;
+                                        else czynnik += 1;
                                     }
                                     else if (bf[i] == '-')
                                     {
-                                        if (czynnik1 == 0) czynnik1 = 255;
-                                        else czynnik1 -= 1;
+                                        if (czynnik == 0) czynnik = 255;
+                                        else czynnik -= 1;
                                     }
                                     i++;
                                 } while (ciąg[i] != '[');
-                                for (int iterator = 0; iterator < czynnik1; iterator++)
+                                do
+                                {
+                                    i++;
+                                } while (bf[i] != '<');
+                                while (bf[i] != ']')
+                                {
+                                    if (bf[i] == '-')
+                                    {
+                                        różnica += 1;
+                                        if (różnica > 255) różnica = 0;
+                                    }
+                                    else if (bf[i] == '+')
+                                    {
+                                        różnica -= 1;
+                                        if (różnica < 0) różnica = 255;
+                                    }
+                                    i++;
+                                }
+                                if (różnica == 0 || (różnica % 2 == 0 && czynnik % 2 == 1))
+                                {
+                                    Console.WriteLine("Doszło do zapętlenia programu. Nastąpi powrót do menu głównego:");
+                                    goto Menu;
+                                }
+                                for (int iterator = czynnik; iterator != 0; iterator -= różnica)
                                 {
                                     i = 0;
                                     do
@@ -130,8 +156,31 @@ namespace brainfuck_konsola
                                                 if (j == 29999) j = 0;
                                                 else j += 1;
                                             }
+                                            else if (bf[i] == '.')
+                                            {
+                                                string wartość = Convert.ToString(numer[j]);
+                                                znak = (char)numer[j];
+                                                odpowiedź += znak;
+                                            }
+                                            else if (bf[i] == ',')
+                                            {
+                                                do
+                                                {
+                                                    Console.Write("Podaj dowolny znak z tablicy ASCII: ");
+                                                    wejściowa = Console.ReadLine();
+                                                    if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
+                                                    else
+                                                    {
+                                                        Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
+                                                        foreach (Byte b in tablicaBitów)
+                                                            numer[j] = b;
+                                                    }
+                                                } while (wejściowa.Length != 1);
+                                            }
                                         }
                                     }
+                                    if (iterator < 0) iterator += 256;
+                                    else if (iterator > 255) iterator -= 256;
                                 }
                             }
                         }
@@ -188,6 +237,7 @@ namespace brainfuck_konsola
                     {
                         Console.Write($"Nie odnaleziono pliku {plik}.txt. Nastąpi powrót do menu głównego.");
                     }
+                    Menu:
                     Console.Write("\nProszę wybrać jedną z tych opcji: H (info), P (kompilacja) lub E (wyjście): ");
                     opcja = Console.ReadKey();
                 }
