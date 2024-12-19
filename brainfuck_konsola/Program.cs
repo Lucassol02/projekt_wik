@@ -12,7 +12,7 @@ namespace brainfuck_konsola
 {
     internal class Program
     {
-        static void Instrukcja(ConsoleKeyInfo opcja) // obiekt odpowiedzialny za wyświetlenie tego, co robi program oraz przykładów.
+        static void Instrukcja() // obiekt odpowiedzialny za wyświetlenie tego, co robi program oraz przykładów.
         {
             Console.Write("\nProgram ma zadanie interpretować każdą z 8 podstawowych funkcji Brainfuck'a:");
             Console.Write("\n|---------------------------------------------------------------------------------------------------------|");
@@ -47,198 +47,220 @@ namespace brainfuck_konsola
             Console.Write("\n\nPracę wykonał Łukasz Wojdalski.");
             Console.Write("\n\nProszę wybrać jedną z tych opcji: H (info), P (kompilacja) lub E (wyjście): ");
         }
+        static void ProgramGłówny()
+        {
+            int[] numer = new int[30000];
+            Encoding utf8 = Encoding.UTF8;
+
+            Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
+            string plik = Console.ReadLine();
+            try
+            {
+                StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\source\\repos\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
+                //StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\projekt_wik-main\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
+                string ciąg = czytaj.ReadToEnd();
+                Console.WriteLine(ciąg);
+                char[] bf = ciąg.ToCharArray();
+                string odpowiedź = string.Empty;
+                int i = 0, j = 0;
+                int różnica = 0;
+                string wejściowa;
+                char znak;
+                int czynnik = 0;
+                for (int szukacz = 0; szukacz < bf.Length; szukacz++) // Procedura sprawdzająca, czy po użyciu pętli (jeśli jest) nie dojdzie do zapętlenia interpretera.
+                {
+                    if (bf[szukacz] == '[')
+                    {
+                        do
+                        {
+                            if (bf[i] == '+')
+                            {
+                                if (czynnik == 255) czynnik = 0;
+                                else czynnik += 1;
+                            }
+                            else if (bf[i] == '-')
+                            {
+                                if (czynnik == 0) czynnik = 255;
+                                else czynnik -= 1;
+                            }
+                            i++;
+                        } while (bf[i] != '[');
+                        do
+                        {
+                            i++;
+                        } while (bf[i] != '<' && bf[i] != '>');
+                        if (bf[i] == '<')
+                            do
+                            {
+                                i++;
+                            } while (bf[i] != '>');
+                        else if (bf[i] != '>')
+                            do
+                            {
+                                i++;
+                            } while (bf[i] != '<');
+                        while (bf[i] != ']')
+                        {
+                            if (bf[i] == '-')
+                            {
+                                różnica += 1;
+                                if (różnica > 255) różnica = 0;
+                            }
+                            else if (bf[i] == '+')
+                            {
+                                różnica -= 1;
+                                if (różnica < 0) różnica = 255;
+                            }
+                            i++;
+                        }
+                        if (różnica == 0 || (różnica % 2 == 0 && czynnik % 2 == 1))
+                        {
+                            Console.WriteLine("Doszło do zapętlenia programu. Nastąpi powrót do menu głównego.");
+                            goto Menu;
+                        }
+                    }
+                }
+                i = 0;
+                do
+                {
+                    if (bf[i] == '.')
+                    {
+                        string wartość = Convert.ToString(numer[j]);
+                        znak = (char)numer[j];
+                        odpowiedź += znak;
+                    }
+                    else if (bf[i] == ',')
+                    {
+                        do
+                        {
+                            Console.Write("Podaj dowolny znak z tablicy ASCII: ");
+                            wejściowa = Console.ReadLine();
+                            if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
+                            else
+                            {
+                                Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
+                                foreach (Byte b in tablicaBitów)
+                                    numer[j] = b;
+                            }
+                        } while (wejściowa.Length != 1);
+                    }
+                    else if (bf[i] == '+')
+                    {
+                        numer[j] += 1;
+                        if (numer[j] > 255) numer[j] -= 256;
+                    }
+                    else if (bf[i] == '-')
+                    {
+                        numer[j] -= 1;
+                        if (numer[j] < 0) numer[j] += 256;
+                    }
+                    else if (i == bf.Length) Console.WriteLine(odpowiedź);
+                    else if (bf[i] == '<')
+                    {
+                        if (j == 0) j = numer.Length - 1;
+                        else j -= 1;
+                    }
+                    else if (bf[i] == '>')
+                    {
+                        if (j == 29999) j = 0;
+                        else j += 1;
+                    }
+                    else if (bf[i] == '[')
+                    {
+                        do
+                        {
+                            i = 0;
+                            do
+                            {
+                                i++;
+                            } while (bf[i] != '[');
+                            while (bf[i] != ']')
+                            {
+                                for (bf[i] = '['; bf[i] != ']'; i++)
+                                {
+                                    if (bf[i] == '+')
+                                    {
+                                        numer[j] += 1;
+                                        if (numer[j] > 255) numer[j] = 0;
+                                        //Console.Write(numer[j] + ", ");
+                                    }
+                                    else if (bf[i] == '-')
+                                    {
+                                        numer[j] -= 1;
+                                        if (numer[j] < 0) numer[j] = 255;
+                                        //Console.Write(numer[j] + ", ");
+                                    }
+                                    else if (bf[i] == '<')
+                                    {
+                                        if (j == 0) j = numer.Length - 1;
+                                        else j -= 1;
+                                        //Console.Write(j + ", ");
+                                    }
+                                    else if (bf[i] == '>')
+                                    {
+                                        if (j == numer.Length - 1) j = 0;
+                                        else j += 1;
+                                        //Console.Write(j + ", ");
+                                    }
+                                    else if (bf[i] == '.')
+                                    {
+                                        string wartość = Convert.ToString(numer[j]);
+                                        znak = (char)numer[j];
+                                        odpowiedź += znak;
+                                    }
+                                    else if (bf[i] == ',')
+                                    {
+                                        do
+                                        {
+                                            Console.Write("Podaj dowolny znak z tablicy ASCII: ");
+                                            wejściowa = Console.ReadLine();
+                                            if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
+                                            else
+                                            {
+                                                Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
+                                                foreach (Byte b in tablicaBitów)
+                                                    numer[j] = b;
+                                            }
+                                        } while (wejściowa.Length != 1);
+                                    }
+                                }
+                                //Console.WriteLine();
+                                if (numer[j] < 0) numer[j] += 256;
+                                else if (numer[j] > 255) numer[j] -= 256;
+                            }
+                        } while (numer[j] != 0); 
+                    }
+                    i++;
+                    if (i == bf.Length) Console.WriteLine(odpowiedź);
+                } while (i < bf.Length);
+                czytaj.Close();
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                Console.Write($"Nie odnaleziono pliku {plik}.txt. Nastąpi powrót do menu głównego.");
+            }
+            Menu:
+            Console.Write("\nProszę wybrać jedną z tych opcji: H (pomoc i info), P (kompilacja) lub E (wyjście): ");
+        }
         static void Main(string[] args)
         {
-            Console.Write("Witamy w interpreterze języka Brainfuck. Aby rozpocząć pracę, należy wybrać polecenie. (h - informacje prawno-autorskie; -p <ścieżka do pliku> - uruchom wskazany kod Brainfuck; -e - wyjdź z programu): "); 
+            Console.Write("Witamy w interpreterze języka Brainfuck. Aby rozpocząć pracę, należy wybrać polecenie. (h - pomoc i informacje prawno-autorskie; -p <ścieżka do pliku> - uruchom wskazany kod Brainfuck; -e - wyjdź z programu): "); 
             ConsoleKeyInfo opcja = Console.ReadKey();
             do
             {
                 if (opcja.Key != ConsoleKey.H && opcja.Key != ConsoleKey.P && opcja.Key != ConsoleKey.E)
                 {
-                    Console.Write("\n\nProszę wybrać jedną z tych opcji: H (info), P (kompilacja) lub E (wyjście): ");
+                    Console.Write("\n\nProszę wybrać jedną z tych opcji: H (pomoc i info), P (kompilacja) lub E (wyjście): ");
                     opcja = Console.ReadKey();
                 }
                 else if (opcja.Key == ConsoleKey.H)
                 {
-                    Instrukcja(opcja);
+                    Instrukcja();
                     opcja = Console.ReadKey();
                 }
                 else if (opcja.Key == ConsoleKey.P)
                 {
-                    int[] numer = new int[30000];
-                    Encoding utf8 = Encoding.UTF8;
-
-                    Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
-                    string plik = Console.ReadLine();
-                    try
-                    {
-                        StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\source\\repos\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
-                        //StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\brainfuck_konsola-main\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
-                        string ciąg = czytaj.ReadToEnd();
-                        Console.WriteLine(ciąg);
-                        char[] bf = ciąg.ToCharArray();
-                        string odpowiedź = string.Empty;
-                        int i = 0, j = 0;
-                        int różnica = 0;
-                        int[] wskaźnik = new int[30000];
-                        string wejściowa;
-                        char znak;
-                        int czynnik = 0;
-                        for (int szukacz = 0; szukacz < bf.Length; szukacz++)
-                        {
-                            if (bf[szukacz] == '[')
-                            {
-                                do
-                                {
-                                    if (bf[i] == '+')
-                                    {
-                                        if (czynnik == 255) czynnik = 0;
-                                        else czynnik += 1;
-                                    }
-                                    else if (bf[i] == '-')
-                                    {
-                                        if (czynnik == 0) czynnik = 255;
-                                        else czynnik -= 1;
-                                    }
-                                    i++;
-                                } while (ciąg[i] != '[');
-                                do
-                                {
-                                    i++;
-                                } while (bf[i] != '<');
-                                while (bf[i] != ']')
-                                {
-                                    if (bf[i] == '-')
-                                    {
-                                        różnica += 1;
-                                        if (różnica > 255) różnica = 0;
-                                    }
-                                    else if (bf[i] == '+')
-                                    {
-                                        różnica -= 1;
-                                        if (różnica < 0) różnica = 255;
-                                    }
-                                    i++;
-                                }
-                                if (różnica == 0 || (różnica % 2 == 0 && czynnik % 2 == 1))
-                                {
-                                    Console.WriteLine("Doszło do zapętlenia programu. Nastąpi powrót do menu głównego:");
-                                    goto Menu;
-                                }
-                                for (int iterator = czynnik; iterator != 0; iterator -= różnica)
-                                {
-                                    i = 0;
-                                    do
-                                    {
-                                        i++;
-                                    } while (bf[i] != '[');
-                                    while (bf[i] != ']')
-                                    {
-                                        for (bf[i] = '['; bf[i] != ']'; i++)
-                                        {
-                                            if (bf[i] == '+')
-                                            {
-                                                numer[j] += 1;
-                                                if (numer[j] > 255) numer[j] = 0;
-                                            }
-                                            else if (bf[i] == '-')
-                                            {
-                                                numer[j] -= 1;
-                                                if (numer[j] < 0) numer[j] = 255;
-                                            }
-                                            else if (bf[i] == '<')
-                                            {
-                                                if (j == 0) j = wskaźnik.Length - 1;
-                                                else j -= 1;
-                                            }
-                                            else if (bf[i] == '>')
-                                            {
-                                                if (j == 29999) j = 0;
-                                                else j += 1;
-                                            }
-                                            else if (bf[i] == '.')
-                                            {
-                                                string wartość = Convert.ToString(numer[j]);
-                                                znak = (char)numer[j];
-                                                odpowiedź += znak;
-                                            }
-                                            else if (bf[i] == ',')
-                                            {
-                                                do
-                                                {
-                                                    Console.Write("Podaj dowolny znak z tablicy ASCII: ");
-                                                    wejściowa = Console.ReadLine();
-                                                    if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
-                                                    else
-                                                    {
-                                                        Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
-                                                        foreach (Byte b in tablicaBitów)
-                                                            numer[j] = b;
-                                                    }
-                                                } while (wejściowa.Length != 1);
-                                            }
-                                        }
-                                    }
-                                    if (iterator < 0) iterator += 256;
-                                    else if (iterator > 255) iterator -= 256;
-                                }
-                            }
-                        }
-                        do 
-                        {
-                            if (bf[i] == '.')
-                            {
-                                string wartość = Convert.ToString(numer[j]);
-                                znak = (char)numer[j];
-                                odpowiedź += znak;
-                            }
-                            else if (bf[i] == ',')
-                            {
-                                do
-                                {
-                                    Console.Write("Podaj dowolny znak z tablicy ASCII: ");
-                                    wejściowa = Console.ReadLine();
-                                    if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
-                                    else
-                                    {
-                                        Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
-                                        foreach (Byte b in tablicaBitów)
-                                            numer[j] = b;
-                                    }
-                                } while (wejściowa.Length != 1);
-                            }
-                            else if (bf[i] == '+')
-                            {
-                                numer[j] += 1;
-                                if (numer[j] > 255) numer[j] = 0;
-                            }
-                            else if (bf[i] == '-')
-                            {
-                                numer[j] -= 1;
-                                if (numer[j] < 0) numer[j] = 255;
-                            }
-                            else if (i == bf.Length) Console.WriteLine(odpowiedź);
-                            else if (bf[i] == '<')
-                            {
-                                if (j == 0) j = wskaźnik.Length - 1;
-                                else j -= 1;
-                            }
-                            else if (bf[i] == '>')
-                            {
-                                if (j == 29999) j = 0;
-                                else j += 1;
-                            }
-                            i++;
-                            if (i == bf.Length) Console.WriteLine(odpowiedź);
-                        } while (i < bf.Length);
-                        czytaj.Close();
-                    }
-                    catch (System.IO.FileNotFoundException)
-                    {
-                        Console.Write($"Nie odnaleziono pliku {plik}.txt. Nastąpi powrót do menu głównego.");
-                    }
-                    Menu:
-                    Console.Write("\nProszę wybrać jedną z tych opcji: H (info), P (kompilacja) lub E (wyjście): ");
+                    ProgramGłówny();
                     opcja = Console.ReadKey();
                 }
             } while (opcja.Key != ConsoleKey.E);
