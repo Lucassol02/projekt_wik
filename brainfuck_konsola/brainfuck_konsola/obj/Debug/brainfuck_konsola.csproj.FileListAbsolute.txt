@@ -1,7 +1,0 @@
-C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\bin\Debug\brainfuck_konsola.exe.config
-C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\bin\Debug\brainfuck_konsola.exe
-C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\bin\Debug\brainfuck_konsola.pdb
-C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfuck_konsola.csproj.AssemblyReference.cache
-C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfuck_konsola.csproj.CoreCompileInputs.cache
-C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfuck_konsola.exe
-C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfuck_konsola.pdb
