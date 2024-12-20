@@ -56,8 +56,7 @@ namespace brainfuck_konsola
             string plik = Console.ReadLine();
             try
             {
-                StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\source\\repos\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
-                //StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\projekt_wik-main\\brainfuck_konsola\\brainfuck_konsola\\" + plik + ".txt");
+                StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\projekt_wik-main\\brainfuck_konsola\\" + plik + ".txt");
                 string ciąg = czytaj.ReadToEnd();
                 Console.WriteLine(ciąg);
                 char[] bf = ciąg.ToCharArray();
