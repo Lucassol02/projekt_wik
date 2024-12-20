@@ -49,7 +49,7 @@ namespace brainfuck_konsola
         }
         static void ProgramGłówny()
         {
-            int[] numer = new int[30000];
+            int[] numer = new int[1024];
             Encoding utf8 = Encoding.UTF8;
 
             Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
@@ -62,7 +62,7 @@ namespace brainfuck_konsola
                 Console.WriteLine(ciąg);
                 char[] bf = ciąg.ToCharArray();
                 string odpowiedź = string.Empty;
-                int i = 0, j = 0;
+                int i = 0, j = 0, k = 0;
                 int różnica = 0;
                 string wejściowa;
                 char znak;
@@ -162,7 +162,7 @@ namespace brainfuck_konsola
                     }
                     else if (bf[i] == '>')
                     {
-                        if (j == 29999) j = 0;
+                        if (j == numer.Length - 1) j = 0;
                         else j += 1;
                     }
                     else if (bf[i] == '[')
@@ -173,64 +173,62 @@ namespace brainfuck_konsola
                             do
                             {
                                 i++;
-                            } while (bf[i] != '[');
-                            while (bf[i] != ']')
+                            } while (bf[i] != '[' || i < k);
+                            for (bf[i] = '['; bf[i] != ']'; i++)
                             {
-                                for (bf[i] = '['; bf[i] != ']'; i++)
+                                if (bf[i] == '+')
                                 {
-                                    if (bf[i] == '+')
-                                    {
-                                        numer[j] += 1;
-                                        if (numer[j] > 255) numer[j] = 0;
-                                        //Console.Write(numer[j] + ", ");
-                                    }
-                                    else if (bf[i] == '-')
-                                    {
-                                        numer[j] -= 1;
-                                        if (numer[j] < 0) numer[j] = 255;
-                                        //Console.Write(numer[j] + ", ");
-                                    }
-                                    else if (bf[i] == '<')
-                                    {
-                                        if (j == 0) j = numer.Length - 1;
-                                        else j -= 1;
-                                        //Console.Write(j + ", ");
-                                    }
-                                    else if (bf[i] == '>')
-                                    {
-                                        if (j == numer.Length - 1) j = 0;
-                                        else j += 1;
-                                        //Console.Write(j + ", ");
-                                    }
-                                    else if (bf[i] == '.')
-                                    {
-                                        string wartość = Convert.ToString(numer[j]);
-                                        znak = (char)numer[j];
-                                        odpowiedź += znak;
-                                    }
-                                    else if (bf[i] == ',')
-                                    {
-                                        do
-                                        {
-                                            Console.Write("Podaj dowolny znak z tablicy ASCII: ");
-                                            wejściowa = Console.ReadLine();
-                                            if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
-                                            else
-                                            {
-                                                Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
-                                                foreach (Byte b in tablicaBitów)
-                                                    numer[j] = b;
-                                            }
-                                        } while (wejściowa.Length != 1);
-                                    }
+                                    numer[j] += 1;
+                                    if (numer[j] > 255) numer[j] = 0;
+                                    //Console.Write(numer[j] + ", ");
                                 }
-                                //Console.WriteLine();
-                                if (numer[j] < 0) numer[j] += 256;
-                                else if (numer[j] > 255) numer[j] -= 256;
+                                else if (bf[i] == '-')
+                                {
+                                    numer[j] -= 1;
+                                    if (numer[j] < 0) numer[j] = 255;
+                                    //Console.Write(numer[j] + ", ");
+                                }
+                                else if (bf[i] == '<')
+                                {
+                                    if (j == 0) j = numer.Length - 1;
+                                    else j -= 1;
+                                    //Console.Write(j + ", ");
+                                }
+                                else if (bf[i] == '>')
+                                {
+                                    if (j == numer.Length - 1) j = 0;
+                                    else j += 1;
+                                    //Console.Write(j + ", ");
+                                }
+                                else if (bf[i] == '.')
+                                {
+                                    string wartość = Convert.ToString(numer[j]);
+                                    znak = (char)numer[j];
+                                    odpowiedź += znak;
+                                }
+                                else if (bf[i] == ',')
+                                {
+                                    do
+                                    {
+                                        Console.Write("Podaj dowolny znak z tablicy ASCII: ");
+                                        wejściowa = Console.ReadLine();
+                                        if (wejściowa.Length != 1) Console.WriteLine("Proszę podać tylko jeden znak.");
+                                        else
+                                        {
+                                            Byte[] tablicaBitów = utf8.GetBytes(wejściowa);
+                                            foreach (Byte b in tablicaBitów)
+                                                numer[j] = b;
+                                        }
+                                    } while (wejściowa.Length != 1);
+                                }
                             }
+                            //Console.WriteLine();
+                            if (numer[j] < 0) numer[j] += 256;
+                            else if (numer[j] > 255) numer[j] -= 256;
                         } while (numer[j] != 0); 
                     }
                     i++;
+                    k++;
                     if (i == bf.Length) Console.WriteLine(odpowiedź);
                 } while (i < bf.Length);
                 czytaj.Close();

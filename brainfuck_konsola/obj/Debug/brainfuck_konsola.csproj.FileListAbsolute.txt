@@ -5,3 +5,10 @@ C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfu
 C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfuck_konsola.csproj.CoreCompileInputs.cache
 C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfuck_konsola.exe
 C:\Users\dell\source\repos\brainfuck_konsola\brainfuck_konsola\obj\Debug\brainfuck_konsola.pdb
+C:\Users\dell\Desktop\projekt_wik-main\brainfuck_konsola\bin\Debug\brainfuck_konsola.exe.config
+C:\Users\dell\Desktop\projekt_wik-main\brainfuck_konsola\bin\Debug\brainfuck_konsola.exe
+C:\Users\dell\Desktop\projekt_wik-main\brainfuck_konsola\bin\Debug\brainfuck_konsola.pdb
+C:\Users\dell\Desktop\projekt_wik-main\brainfuck_konsola\obj\Debug\brainfuck_konsola.csproj.AssemblyReference.cache
+C:\Users\dell\Desktop\projekt_wik-main\brainfuck_konsola\obj\Debug\brainfuck_konsola.csproj.CoreCompileInputs.cache
+C:\Users\dell\Desktop\projekt_wik-main\brainfuck_konsola\obj\Debug\brainfuck_konsola.exe
+C:\Users\dell\Desktop\projekt_wik-main\brainfuck_konsola\obj\Debug\brainfuck_konsola.pdb
