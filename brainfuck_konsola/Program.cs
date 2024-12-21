@@ -49,7 +49,7 @@ namespace brainfuck_konsola
         }
         static void ProgramGłówny()
         {
-            int[] numer = new int[1024];
+            int[] numer = new int[30000];
             Encoding utf8 = Encoding.UTF8;
 
             Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
