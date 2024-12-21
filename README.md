@@ -8,3 +8,5 @@ Program ma zadanie interpretować każdą z 8 podstawowych funkcji Brainfuck'a:<
   -> "," - pobranie znaku i wstawienie go w bieżącej pozycji<br>
   -> "[" - bezpośredni skok do odpowiadającego elementu "]", jeśli w bieżącej pozycji znajduje się 0<br>
   -> "]" - skok do odpowiadającego elementu "["<br>
+
+Aby otworzyć program, należy pobrać zip-a i wyodbrębnić go na Pulpicie, gdyż tak sugeruje ścieżka pliku w programie. Potem szukamy pliku z roszerzeniem .exe i otwieramy go.
