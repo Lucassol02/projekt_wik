@@ -55,7 +55,7 @@ namespace brainfuck_konsola
             Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
             string plik = Console.ReadLine();
             try
-            {
+            { 
                 StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\projekt_wik-main\\brainfuck_konsola\\" + plik + ".txt");
                 string ciąg = czytaj.ReadToEnd();
                 Console.WriteLine(ciąg);
@@ -65,22 +65,23 @@ namespace brainfuck_konsola
                 int różnica = 0;
                 string wejściowa;
                 char znak;
-                int czynnik = 0;
                 for (int szukacz = 0; szukacz < bf.Length; szukacz++) // Procedura sprawdzająca, czy po użyciu pętli (jeśli jest) nie dojdzie do zapętlenia interpretera.
                 {
                     if (bf[szukacz] == '[')
                     {
+                        numer[j] = 0;
+                        różnica = 0;
                         do
                         {
                             if (bf[i] == '+')
                             {
-                                if (czynnik == 255) czynnik = 0;
-                                else czynnik += 1;
+                                if (numer[j] == 255) numer[j] = 0;
+                                else numer[j] += 1;
                             }
                             else if (bf[i] == '-')
                             {
-                                if (czynnik == 0) czynnik = 255;
-                                else czynnik -= 1;
+                                if (numer[j] == 0) numer[j] = 255;
+                                else numer[j] -= 1;
                             }
                             i++;
                         } while (bf[i] != '[');
@@ -93,26 +94,34 @@ namespace brainfuck_konsola
                             {
                                 i++;
                             } while (bf[i] != '>');
-                        else if (bf[i] != '>')
+                        else if (bf[i] == '>')
                             do
                             {
                                 i++;
                             } while (bf[i] != '<');
-                        while (bf[i] != ']')
+                        try
                         {
-                            if (bf[i] == '-')
+                            while (bf[i] != ']')
                             {
-                                różnica += 1;
-                                if (różnica > 255) różnica = 0;
+                                if (bf[i] == '-')
+                                {
+                                    różnica += 1;
+                                    if (różnica > 255) różnica = 0;
+                                }
+                                else if (bf[i] == '+')
+                                {
+                                    różnica -= 1;
+                                    if (różnica < 0) różnica = 255;
+                                }
+                                i++;
                             }
-                            else if (bf[i] == '+')
-                            {
-                                różnica -= 1;
-                                if (różnica < 0) różnica = 255;
-                            }
-                            i++;
                         }
-                        if (różnica == 0 || (różnica % 2 == 0 && czynnik % 2 == 1))
+                        catch (IndexOutOfRangeException)
+                        {
+                            Console.WriteLine("Brakuje znaku ']' w pętli. Nastąpi powrót do menu głównego.");
+                            goto Menu;
+                        }
+                        if (różnica == 0 || (różnica % 2 == 0 && numer[j] % 2 == 1))
                         {
                             Console.WriteLine("Doszło do zapętlenia programu. Nastąpi powrót do menu głównego.");
                             goto Menu;
@@ -120,6 +129,10 @@ namespace brainfuck_konsola
                     }
                 }
                 i = 0;
+                for (int reset = 0; reset < numer.Length; reset++)
+                {
+                    numer[j] = 0;
+                }
                 do
                 {
                     if (bf[i] == '.')
@@ -179,25 +192,21 @@ namespace brainfuck_konsola
                                 {
                                     numer[j] += 1;
                                     if (numer[j] > 255) numer[j] = 0;
-                                    //Console.Write(numer[j] + ", ");
                                 }
                                 else if (bf[i] == '-')
                                 {
                                     numer[j] -= 1;
                                     if (numer[j] < 0) numer[j] = 255;
-                                    //Console.Write(numer[j] + ", ");
                                 }
                                 else if (bf[i] == '<')
                                 {
                                     if (j == 0) j = numer.Length - 1;
                                     else j -= 1;
-                                    //Console.Write(j + ", ");
                                 }
                                 else if (bf[i] == '>')
                                 {
                                     if (j == numer.Length - 1) j = 0;
                                     else j += 1;
-                                    //Console.Write(j + ", ");
                                 }
                                 else if (bf[i] == '.')
                                 {
@@ -221,7 +230,6 @@ namespace brainfuck_konsola
                                     } while (wejściowa.Length != 1);
                                 }
                             }
-                            //Console.WriteLine();
                             if (numer[j] < 0) numer[j] += 256;
                             else if (numer[j] > 255) numer[j] -= 256;
                         } while (numer[j] != 0); 
@@ -231,7 +239,7 @@ namespace brainfuck_konsola
                     if (i == bf.Length) Console.WriteLine(odpowiedź);
                 } while (i < bf.Length);
                 czytaj.Close();
-            }
+            } 
             catch (System.IO.FileNotFoundException)
             {
                 Console.Write($"Nie odnaleziono pliku {plik}.txt. Nastąpi powrót do menu głównego.");
