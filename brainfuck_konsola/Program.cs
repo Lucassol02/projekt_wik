@@ -52,11 +52,11 @@ namespace brainfuck_konsola
             int[] numer = new int[30000];
             Encoding utf8 = Encoding.UTF8;
 
-            Console.Write("\n\nJaki plik zamierzasz wrzucić do interpretera?\t");
-            string plik = Console.ReadLine();
+            Console.Write("\n\nPodaj ścieżkę pliku...\t");
+            string ścieżka = Console.ReadLine();
             try
             { 
-                StreamReader czytaj = new StreamReader("C:\\Users\\" + Environment.UserName + "\\Desktop\\projekt_wik-main\\brainfuck_konsola\\" + plik + ".txt");
+                StreamReader czytaj = new StreamReader(ścieżka);
                 string ciąg = czytaj.ReadToEnd();
                 Console.WriteLine(ciąg);
                 char[] bf = ciąg.ToCharArray();
@@ -242,7 +242,7 @@ namespace brainfuck_konsola
             } 
             catch (System.IO.FileNotFoundException)
             {
-                Console.Write($"Nie odnaleziono pliku {plik}.txt. Nastąpi powrót do menu głównego.");
+                Console.Write("Nie odnaleziono we wskazanej ścieżce. Nastąpi powrót do menu głównego.");
             }
             Menu:
             Console.Write("\nProszę wybrać jedną z tych opcji: H (pomoc i info), P (kompilacja) lub E (wyjście): ");
